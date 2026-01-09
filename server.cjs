@@ -1,10 +1,11 @@
-// Entry point for Node.js email server (CommonJS)
-// This file uses .cjs extension to work with package.json "type": "module"
-// Run: node server.cjs
+// Entry point for Node.js email server
+// Run this file to start the email server backend
+// Usage: node server.js
 
-// Set default environment variables
-process.env.PORT = process.env.PORT || "3001";
-process.env.NODE_ENV = process.env.NODE_ENV || "production";
+// Since package.json has "type": "module", we need to use import
+// But backend/email-server.js uses CommonJS, so we'll run it directly
+// This file just redirects to the actual email server
 
-// Load and run the email server (which uses CommonJS)
-require("./backend/email-server.js");
+console.log('Starting email server...');
+console.log('Please run: node backend/email-server.js');
+console.log('Or directly: cd backend && node email-server.js');

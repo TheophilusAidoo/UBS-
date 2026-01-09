@@ -7,10 +7,10 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "serve": "node app.cjs",
+    "prod": "npm run build && node app.cjs",
     "lint": "eslint . --ext .ts,.tsx",
-    "type-check": "tsc --noEmit",
-    "server": "node server.cjs",
-    "email-server": "node backend/email-server.js"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -21,6 +21,7 @@
     "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.6.2",
     "date-fns": "^3.0.6",
+    "express": "^4.22.1",
     "i18next": "^23.7.6",
     "i18next-browser-languagedetector": "^7.2.0",
     "jspdf": "^2.5.2",
