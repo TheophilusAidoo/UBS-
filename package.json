@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "server": "node server.cjs",
+    "email-server": "node backend/email-server.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
