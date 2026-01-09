@@ -110,9 +110,7 @@ class ExportService {
           <table>
             <thead>
               <tr>
-                ${headers.map((header, index) => {
-                  // Check if this is a numeric column (Clients contacted, Quotes sent, Sales made)
-                  const isNumericColumn = ['Clients contacted', 'Quotes sent', 'Sales made'].includes(header);
+                ${headers.map((header) => {
                   return `<th class="header-row">${header}</th>`;
                 }).join('')}
               </tr>

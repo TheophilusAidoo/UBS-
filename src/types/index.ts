@@ -320,6 +320,7 @@ export interface Goal {
   status: 'not-started' | 'in-progress' | 'completed' | 'cancelled';
   createdAt: string;
   updatedAt: string;
+  user?: User; // User relation
 }
 
 export interface PerformanceReview {
@@ -334,6 +335,8 @@ export interface PerformanceReview {
   competencies?: any;
   createdAt: string;
   updatedAt: string;
+  user?: User; // User relation
+  reviewedByUser?: User; // Reviewed by user relation
 }
 
 // AI Types
@@ -398,9 +401,11 @@ export interface DashboardStats {
   totalStaff?: number;
   activeProjects?: number;
   pendingLeaves?: number;
+  revenue?: number;
+  expenses?: number;
+  profit?: number;
   totalRevenue?: number;
   totalExpenses?: number;
-  profit?: number;
   dailyIncome?: number;
   dailyExpenses?: number;
 }
