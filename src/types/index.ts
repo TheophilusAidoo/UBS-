@@ -228,6 +228,7 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   assignedUsers?: User[];
+  assignedTo?: string[]; // Alternative property name
   client?: Client;
 }
 

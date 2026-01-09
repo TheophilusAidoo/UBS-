@@ -37,4 +37,14 @@ declare module '@supabase/supabase-js' {
     single(): any;
     maybeSingle(): any;
   }
+
+  // Export RealtimeChannel type for realtime subscriptions
+  export interface RealtimeChannel {
+    subscribe(callback: (payload: any) => void): any;
+    unsubscribe(): any;
+    send(event: string, payload: any): any;
+  }
+
+  // Export createClient function
+  export function createClient(url: string, key: string, options?: any): any;
 }
