@@ -241,6 +241,7 @@ export interface WorkReport {
   hoursWorked?: number;
   date: string;
   createdAt: string;
+  user?: User; // User relation
 }
 
 export interface DailyReport {

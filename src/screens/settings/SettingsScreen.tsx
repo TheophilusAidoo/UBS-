@@ -29,6 +29,7 @@ import {
   DialogContent,
   DialogActions,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 import {
   Palette,
@@ -96,7 +97,7 @@ const SettingsScreen: React.FC = () => {
     setCurrency: setUserCurrency,
     loadCurrency,
   } = useUserCurrencyStore();
-  const { language, setLanguage } = useLanguageStore();
+  const { currentLanguage: language, setLanguage } = useLanguageStore();
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(0);
