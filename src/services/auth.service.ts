@@ -331,6 +331,13 @@ class AuthService {
       console.log('✅ User profile found:', userProfile.email, userProfile.role);
       const mappedUser = mapUserFromDB(userProfile) as User;
       
+      // Check if user is banned (only for staff, not admins)
+      if (mappedUser.role === 'staff' && mappedUser.isBanned) {
+        // Sign out the user immediately
+        await supabase.auth.signOut();
+        throw new Error('❌ Your account has been banned. Please contact your administrator for more information.');
+      }
+      
       return {
         user: mappedUser,
           session: loginData.session,
@@ -531,7 +538,16 @@ class AuthService {
         return null;
       }
 
-      return mapUserFromDB(userProfile) as User;
+      const mappedUser = mapUserFromDB(userProfile) as User;
+      
+      // Check if user is banned (only for staff, not admins)
+      if (mappedUser.role === 'staff' && mappedUser.isBanned) {
+        // Sign out the banned user
+        await supabase.auth.signOut();
+        return null;
+      }
+
+      return mappedUser;
     } catch (error) {
       console.error('Error in getCurrentUser:', error);
       return null;

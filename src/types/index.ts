@@ -14,6 +14,7 @@ export interface User {
   avatar?: string;
   permissions?: string[];
   isSubAdmin?: boolean;
+  isBanned?: boolean;
   salaryAmount?: number;
   salaryDate?: number; // Day of month (1-31)
   createdAt: string;

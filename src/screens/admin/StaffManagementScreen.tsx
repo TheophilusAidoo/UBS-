@@ -47,6 +47,8 @@ import {
   VisibilityOff,
   AttachMoney,
   CalendarToday,
+  Block,
+  CheckCircle,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { staffService, CreateStaffData, UpdateStaffData } from '../../services/staff.service';
@@ -66,6 +68,10 @@ const StaffManagementScreen: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; staff: User | null }>({
+    open: false,
+    staff: null,
+  });
+  const [banDialog, setBanDialog] = useState<{ open: boolean; staff: User | null }>({
     open: false,
     staff: null,
   });
@@ -280,6 +286,38 @@ const StaffManagementScreen: React.FC = () => {
       await fetchStaff();
     } catch (err: any) {
       setError(err.message || t('staff.failedToDelete'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBanStaff = async () => {
+    if (!banDialog.staff) return;
+    try {
+      setLoading(true);
+      setError(null);
+      await staffService.banStaff(banDialog.staff.id);
+      setSuccess(`Staff member ${banDialog.staff.firstName || banDialog.staff.email} has been banned successfully. They will not be able to login.`);
+      setTimeout(() => setSuccess(null), 5000);
+      setBanDialog({ open: false, staff: null });
+      await fetchStaff();
+    } catch (err: any) {
+      setError(err.message || 'Failed to ban staff member');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUnbanStaff = async (staffId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await staffService.unbanStaff(staffId);
+      setSuccess('Staff member has been unbanned successfully. They can now login again.');
+      setTimeout(() => setSuccess(null), 5000);
+      await fetchStaff();
+    } catch (err: any) {
+      setError(err.message || 'Failed to unban staff member');
     } finally {
       setLoading(false);
     }
@@ -581,7 +619,14 @@ const StaffManagementScreen: React.FC = () => {
                         )}
                       </TableCell>
                       <TableCell align="center">
-                        {staffMember.isSubAdmin ? (
+                        {staffMember.isBanned ? (
+                          <Chip 
+                            label="Banned" 
+                            size="small" 
+                            color="error"
+                            sx={{ fontWeight: 600 }}
+                          />
+                        ) : staffMember.isSubAdmin ? (
                           <Chip 
                             label={t('staff.isSubAdmin')} 
                             size="small" 
@@ -643,6 +688,41 @@ const StaffManagementScreen: React.FC = () => {
                           >
                             <Lock fontSize="small" />
                           </IconButton>
+                          {staffMember.isBanned ? (
+                            <IconButton
+                              size="small"
+                              color="success"
+                              onClick={() => handleUnbanStaff(staffMember.id)}
+                              sx={{
+                                border: '1px solid rgba(0,0,0,0.08)',
+                                '&:hover': {
+                                  backgroundColor: 'success.main',
+                                  color: 'white',
+                                  borderColor: 'success.main',
+                                },
+                              }}
+                              title="Unban Staff"
+                            >
+                              <CheckCircle fontSize="small" />
+                            </IconButton>
+                          ) : (
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => setBanDialog({ open: true, staff: staffMember })}
+                              sx={{
+                                border: '1px solid rgba(0,0,0,0.08)',
+                                '&:hover': {
+                                  backgroundColor: 'error.main',
+                                  color: 'white',
+                                  borderColor: 'error.main',
+                                },
+                              }}
+                              title="Ban Staff"
+                            >
+                              <Block fontSize="small" />
+                            </IconButton>
+                          )}
                           <IconButton
                             size="small"
                             color="error"
@@ -847,6 +927,58 @@ const StaffManagementScreen: React.FC = () => {
             sx={{ borderRadius: 1 }}
           >
             {loading ? <CircularProgress size={20} /> : editingStaff ? t('staff.update') : t('staff.create')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Ban Confirmation Dialog */}
+      <Dialog 
+        open={banDialog.open} 
+        onClose={() => setBanDialog({ open: false, staff: null })}
+        PaperProps={{
+          sx: { borderRadius: 2 }
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Ban Staff Member</DialogTitle>
+        <Divider />
+        <DialogContent sx={{ pt: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Box sx={{ 
+              width: 48, 
+              height: 48, 
+              borderRadius: 2, 
+              backgroundColor: 'error.light',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Block sx={{ fontSize: 24, color: 'error.main' }} />
+            </Box>
+            <Box>
+              <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
+                Are you sure you want to ban this staff member?
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <strong>{banDialog.staff?.firstName && banDialog.staff?.lastName
+                  ? `${banDialog.staff.firstName} ${banDialog.staff.lastName}`
+                  : banDialog.staff?.email}</strong> will not be able to login to the system. You can unban them later if needed.
+              </Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        <Divider />
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setBanDialog({ open: false, staff: null })}>
+            {t('common.cancel')}
+          </Button>
+          <Button 
+            onClick={handleBanStaff} 
+            variant="contained" 
+            color="error" 
+            disabled={loading}
+            sx={{ borderRadius: 1 }}
+          >
+            {loading ? <CircularProgress size={20} /> : 'Ban Staff'}
           </Button>
         </DialogActions>
       </Dialog>

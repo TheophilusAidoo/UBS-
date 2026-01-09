@@ -24,6 +24,7 @@ export interface UpdateStaffData {
   companyId?: string;
   isActive?: boolean;
   isSubAdmin?: boolean;
+  isBanned?: boolean;
   salaryAmount?: number;
   salaryDate?: number; // Day of month (1-31)
 }
@@ -286,6 +287,7 @@ class StaffService {
       updateData.is_active = data.isActive;
     }
     if (data.isSubAdmin !== undefined) updateData.is_sub_admin = data.isSubAdmin;
+    if (data.isBanned !== undefined) updateData.is_banned = data.isBanned;
     if (data.salaryAmount !== undefined) updateData.salary_amount = data.salaryAmount;
     if (data.salaryDate !== undefined) updateData.salary_date = data.salaryDate;
     updateData.updated_at = new Date().toISOString();
@@ -355,6 +357,58 @@ class StaffService {
     if (error) throw error;
 
     return (data || []).map((item) => mapUserFromDB(item) as User);
+  }
+
+  async banStaff(id: string): Promise<User> {
+    const { data, error } = await supabase
+      .from(TABLES.users)
+      .update({ 
+        is_banned: true,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .eq('role', 'staff') // Only allow banning staff, not admins
+      .select(`
+        *,
+        company:companies(*)
+      `)
+      .single();
+
+    if (error) throw error;
+    if (!data) throw new Error('Staff member not found');
+
+    // Sign out the banned user if they're currently logged in
+    // Note: This requires the user to be the authenticated user
+    // For proper enforcement, you may want to implement a backend check
+    try {
+      // The actual signout will happen when they try to use the system
+      // and the auth check fails
+    } catch (err) {
+      console.warn('Could not sign out banned user:', err);
+    }
+
+    return mapUserFromDB(data) as User;
+  }
+
+  async unbanStaff(id: string): Promise<User> {
+    const { data, error } = await supabase
+      .from(TABLES.users)
+      .update({ 
+        is_banned: false,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .eq('role', 'staff')
+      .select(`
+        *,
+        company:companies(*)
+      `)
+      .single();
+
+    if (error) throw error;
+    if (!data) throw new Error('Staff member not found');
+
+    return mapUserFromDB(data) as User;
   }
 }
 

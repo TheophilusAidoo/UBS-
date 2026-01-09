@@ -10,6 +10,7 @@ export const mapUserFromDB = (dbUser: any): any => {
     firstName: dbUser.first_name,
     lastName: dbUser.last_name,
     isSubAdmin: dbUser.is_sub_admin || false,
+    isBanned: dbUser.is_banned || false,
     salaryAmount: dbUser.salary_amount ? parseFloat(dbUser.salary_amount) : undefined,
     salaryDate: dbUser.salary_date ? parseInt(dbUser.salary_date, 10) : undefined,
     createdAt: dbUser.created_at,
@@ -31,6 +32,7 @@ export const mapUserToDB = (user: any): any => {
   if (user.avatar !== undefined) dbUser.avatar = user.avatar;
   if (user.permissions !== undefined) dbUser.permissions = user.permissions;
   if (user.isSubAdmin !== undefined) dbUser.is_sub_admin = user.isSubAdmin;
+  if (user.isBanned !== undefined) dbUser.is_banned = user.isBanned;
   if (user.salaryAmount !== undefined) dbUser.salary_amount = user.salaryAmount;
   if (user.salaryDate !== undefined) dbUser.salary_date = user.salaryDate;
 
